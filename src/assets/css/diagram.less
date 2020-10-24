@@ -1,0 +1,19 @@
+.djs-minimap.open .toggle:before {
+  content: '\E80A';
+  font-family: 'app';
+  font-size: 14px;
+  &:hover {
+    color: #005df7;
+  }
+}
+
+.djs-minimap:not(.open) .toggle:before {
+  content: '\F278';
+  font-family: 'app';
+  font-size: 20px;
+}
+
+.djs-minimap:not(.open) .toggle:hover,
+.djs-minimap.open .toggle:hover {
+  color: #005df7;
+}
