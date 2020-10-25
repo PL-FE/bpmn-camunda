@@ -46,7 +46,6 @@ export default {
   methods: {
     ...mapMutations(['addDiagramList']),
     init () {
-      // console.log('Modeler.prototype', Modeler.prototype)
       this.bpmnModeler = new Modeler({
         container: this.$refs.canvas,
         keyboard: {
@@ -86,7 +85,6 @@ export default {
     initEvent () {
       const eventBus = this.bpmnModeler.get('eventBus')
       eventBus.on('selection.changed', e => {
-        console.log('e', e)
         this.elementSelector = e.newSelection
       })
     },

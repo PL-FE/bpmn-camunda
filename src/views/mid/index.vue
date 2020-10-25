@@ -27,7 +27,6 @@ export default {
     ...mapGetters(['radioValue'])
   },
   mounted () {
-    console.log('this.activeName', this.activeName)
     this.setActiveName(this.activeName)
   },
   methods: {

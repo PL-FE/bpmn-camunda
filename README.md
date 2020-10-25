@@ -1,24 +1,5 @@
-# bpmn-doc-test
+# bpmn-camunda
 
-## Project setup
-```
-npm install
-```
+![bpmn-camunda](./src/assets/bpmn-camunda.png)
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+预览地址： [http://bpmn-camunda.pengliang.online/](http://bpmn-camunda.pengliang.online/)

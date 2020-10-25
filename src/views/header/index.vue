@@ -7,7 +7,14 @@
     <i title="复原" class="app-icon app-icon-undo" @click="redo"></i>
     <i title="撤销" class="app-icon app-icon-redo" @click="undo"></i>|
     <i title="导出为图片" class="app-icon app-icon-picture" @click="saveSVG"></i>|
-    <i title="设置元素颜色" class="app-icon app-icon-set-color-tool" @click="setColor"></i>|
+    <i :class="{open: isOpenColor}" title="设置元素颜色" class="app-icon app-icon-set-color-tool" @click="openColor">
+      <i class="el-icon-caret-bottom"></i>
+      <ul class="colorSelect" v-show="isOpenColor">
+        <li v-for="c in COLORS" :key="c.title">
+          <div class="colorBlock" :title="c.title" :style="{borderColor: c.stroke, backgroundColor: c.fill}" @click="setColor(c.fill, c.stroke)"></div>
+        </li>
+      </ul>
+    </i>|
     <i title="元素左对齐" class="app-icon app-icon-align-left-tool" @click="alignElements('left')"></i>
     <i title="元素垂直居中对齐" class="app-icon app-icon-align-center-tool" @click="alignElements('center')"></i>
     <i title="元素右对齐" class="app-icon app-icon-align-right-tool" @click="alignElements('right')"></i>
@@ -26,9 +33,38 @@
 
 <script>
 import { mapGetters } from 'vuex'
+
+const COLORS = [{
+  title: 'White',
+  fill: 'white',
+  stroke: 'black'
+}, {
+  title: 'Blue',
+  fill: 'rgb(187, 222, 251)',
+  stroke: 'rgb(30, 136, 229)'
+}, {
+  title: 'Orange',
+  fill: 'rgb(255, 224, 178)',
+  stroke: 'rgb(251, 140, 0)'
+}, {
+  title: 'Green',
+  fill: 'rgb(200, 230, 201)',
+  stroke: 'rgb(67, 160, 71)'
+}, {
+  title: 'Red',
+  fill: 'rgb(255, 205, 210)',
+  stroke: 'rgb(229, 57, 53)'
+}, {
+  title: 'Purple',
+  fill: 'rgb(225, 190, 231)',
+  stroke: 'rgb(142, 36, 170)'
+}]
 export default {
   data () {
     return {
+      color: '',
+      isOpenColor: false,
+      COLORS
     }
   },
   computed: {
@@ -44,8 +80,12 @@ export default {
       this.curDiagram.bpmnModeler.get('commandStack').undo()
     },
 
-    setColor () {
-      this.curDiagram.setColor()
+    openColor () {
+      this.isOpenColor = !this.isOpenColor
+    },
+
+    setColor (fill, stroke) {
+      this.curDiagram.setColor(fill, stroke)
     },
 
     alignElements (position) {
@@ -145,6 +185,28 @@ export default {
       background-color: #f8f8f8;
       border: 1px solid #ccc;
     }
+  }
+
+  .app-icon-set-color-tool {
+    position: relative;
+    .colorBlock {
+      margin: 4px;
+      width: 56px;
+      height: 16px;
+      border: 1px solid;
+    }
+
+    &.open {
+      background-color: #f8f8f8;
+      border: 1px solid #ccc;
+    }
+  }
+  .colorSelect {
+    z-index: 10;
+    position: absolute;
+    left: 0;
+    list-style: none;
+    transform: translateX(-50%);
   }
 }
 </style>
