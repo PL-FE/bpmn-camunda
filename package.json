@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "bpmn-js": "^7.4.0",
+    "bpmn-js-properties-panel": "^0.37.3",
+    "camunda-bpmn-moddle": "^4.4.0",
     "core-js": "^3.6.5",
     "diagram-js-minimap": "^2.0.3",
     "element-ui": "^2.13.2",

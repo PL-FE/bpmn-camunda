@@ -6,12 +6,17 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     diagramList: [],
-    activeName: ''
+    activeName: '',
+    radioValue: ''
   },
   getters: {
     curDiagram ({ activeName, diagramList }) {
       const res = diagramList.find(it => it.activeName === activeName)
       return res && res.instanceName
+    },
+
+    radioValue ({ radioValue }) {
+      return radioValue
     }
   },
   mutations: {
@@ -21,6 +26,10 @@ export default new Vuex.Store({
     addDiagramList ({ diagramList }, { instanceName, activeName }) {
       const res = diagramList.find(it => it.instanceName === instanceName)
       !res && diagramList.push({ instanceName, activeName })
+    },
+
+    setRadioValue (state, newVAlue) {
+      state.radioValue = newVAlue
     }
   },
   actions: {},

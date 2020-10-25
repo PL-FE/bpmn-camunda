@@ -17,6 +17,9 @@
     <i title="水平分布元素" class="app-icon app-icon-distribute-horizontal-tool" @click="distributeElements('horizontal')"></i>
     <i title="垂直分布元素" class="app-icon app-icon-distribute-vertical-tool" @click="distributeElements('vertical')"></i>
 
+    <!-- <i title="放大" class="app-icon el-icon-zoom-in" @click="handlerZoom(0.1)"></i>
+    <i title="缩小" class="app-icon el-icon-zoom-out" @click="handlerZoom(-0.1)"></i> -->
+
     <input type="file" id="files" ref="refFile" style="display: none" @change="loadBPMN" />
   </div>
 </template>
@@ -53,8 +56,13 @@ export default {
       this.curDiagram.distributeElements(axis)
     },
 
+    handlerZoom (radio) {
+      this.curDiagram.handlerZoom(radio)
+    },
+
     async saveXml () {
-      this.curDiagram.xml = await this.curDiagram.bpmnModeler.saveXML({ format: true })
+      const res = await this.curDiagram.bpmnModeler.saveXML({ format: true })
+      this.curDiagram.xml = res.xml
       this.$message.success('保存成功')
     },
 

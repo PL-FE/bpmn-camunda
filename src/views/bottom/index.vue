@@ -1,7 +1,6 @@
 <template>
   <div class="bottom-container">
-    <el-radio-group v-model="radioValue"
-      size="mini">
+    <el-radio-group v-model="radioValue" size="mini">
       <el-radio-button label="Diagram"></el-radio-button>
       <el-radio-button label="Xml"></el-radio-button>
     </el-radio-group>
@@ -9,16 +8,23 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
       radioValue: 'Diagram'
     }
   },
-  mounted () {
-
+  watch: {
+    radioValue: {
+      immediate: true,
+      handler (v) {
+        this.setRadioValue(v)
+      }
+    }
   },
   methods: {
+    ...mapMutations(['setRadioValue'])
 
   }
 }
