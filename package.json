@@ -17,6 +17,7 @@
     "core-js": "^3.6.5",
     "diagram-js-minimap": "^2.0.3",
     "element-ui": "^2.13.2",
+    "sftp-sync-deploy": "^0.7.1",
     "vue": "^2.6.11",
     "vue-codemirror": "^4.0.6",
     "vuex": "^3.5.1"
