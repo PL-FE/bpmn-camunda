@@ -89,10 +89,12 @@ export default {
     },
 
     alignElements (position) {
+      if (!this.curDiagram.elementSelector.length) return
       this.curDiagram.alignElements(position)
     },
 
     distributeElements (axis) {
+      if (!this.curDiagram.elementSelector.length) return
       this.curDiagram.distributeElements(axis)
     },
 
