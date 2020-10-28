@@ -128,8 +128,8 @@ export default {
   height: calc(100vh - 95px);
 
   .canves {
+    height: 100%;
     width: 100%;
-    flex: 1;
   }
 
   .properties {
