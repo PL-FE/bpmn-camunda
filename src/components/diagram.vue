@@ -133,6 +133,7 @@ export default {
   }
 
   .properties {
+    overflow: auto;
     position: relative;
     width: 0px;
     flex: none;
