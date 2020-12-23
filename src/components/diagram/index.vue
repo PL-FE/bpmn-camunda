@@ -44,8 +44,8 @@ import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json'
 
 import '@/assets/css/diagram.less'
 import '@/assets/icon/Icon.less'
-import XmlPanel from './XmlPanel'
-import ToolBar from './ToolBar'
+import XmlPanel from '@/components/diagram/XmlPanel.vue'
+import ToolBar from '@/components/diagram/ToolBar.vue'
 import { xmlStr } from './xmlData.js'
 import { mapMutations } from 'vuex'
 
