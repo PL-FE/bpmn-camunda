@@ -87,6 +87,7 @@ export default {
     },
 
     setColor (fill, stroke) {
+      if (!this.elementSelector.length) return this.$message.warning('请选择元素')
       const modeling = this.bpmnModeler.get('modeling')
       this.elementSelector.map(element => {
         modeling.setColor(element, {
@@ -98,12 +99,14 @@ export default {
 
     // left/top/right/bottom/cneter/middle
     alignElements (position = 'center') {
+      if (!this.elementSelector.length) return this.$message.warning('请选择元素')
       const alignElements = this.bpmnModeler.get('alignElements')
       alignElements.trigger(this.elementSelector, position)
     },
 
     // horizontal/vertical
     distributeElements (axis) {
+      if (!this.elementSelector.length) return this.$message.warning('请选择元素')
       const alignElements = this.bpmnModeler.get('distributeElements')
       alignElements.trigger(this.elementSelector, axis)
     },

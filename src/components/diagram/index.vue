@@ -14,7 +14,6 @@
           </div>
         </div>
 
-        <!-- <XmlPanel @updateXml="updateXml" :bpmnModeler="bpmnModeler" :activeName="activeName" v-if="radioValue === 'Xml'" /> -->
         <div class="xml-container" v-if="isShowXml">
           <codemirror ref="cmEditor" @changes="mirrorCodeChange" :value="xml.toString()" :options="cmOptions" />
         </div>
