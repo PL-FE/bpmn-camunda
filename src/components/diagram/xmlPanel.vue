@@ -19,7 +19,9 @@ import 'codemirror/addon/dialog/dialog'
 import 'codemirror/addon/dialog/dialog.css'
 
 export default {
-  props: { curDiagram: Object },
+  props: {
+    bpmnModeler: Object
+  },
   components: {
     codemirror
   },
@@ -40,20 +42,17 @@ export default {
       }
     }
   },
-  computed: {
-  },
   mounted () {
     this.saveXML()
   },
 
   beforeDestroy () {
-    this.curDiagram.xml = this.xml
-    this.curDiagram.createNewDiagram()
+    this.$emit('updateXml', this.xml)
   },
 
   methods: {
     async saveXML () {
-      const res = await this.curDiagram.bpmnModeler.saveXML({ format: true })
+      const res = await this.bpmnModeler.saveXML({ format: true })
       this.xml = res.xml.toString()
     },
 

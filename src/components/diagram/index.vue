@@ -1,14 +1,31 @@
 <template>
-  <div class="bpmn-container">
-    <ToolBar @updateXml="updateXml" :bpmnModeler="bpmnModeler" :scale.sync="scale" :elementSelector="elementSelector" :xml="xml" />
-    <div class="canvas-container">
-      <div ref="canvas" class="canves"></div>
-      <div class="properties" :class="{open: openPanel}">
-        <div class="toggle" @click="openPanel = !openPanel">Properties Panel</div>
-        <div ref="propertiesPanel" class="panel"></div>
-      </div>
+  <div class="mid-container">
+    <ToolBar @updateXml="updateXml" @updateScale="updateScale" :bpmnModeler="bpmnModeler" :elementSelector="elementSelector" :xml="xml" :scale.sync="scale" />
+
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane label="diagram_1.bpmn" name="first">
+        <div class="bpmn-container" v-show="radioValue === 'Diagram'">
+          <div class="canvas-container">
+            <div ref="canvas" class="canves"></div>
+            <div class="properties" :class="{open: openPanel}">
+              <div class="toggle" @click="openPanel = !openPanel">Properties Panel</div>
+              <div ref="propertiesPanel" class="panel"></div>
+            </div>
+          </div>
+        </div>
+
+        <XmlPanel @updateXml="updateXml" :bpmnModeler="bpmnModeler" :activeName="activeName" v-if="radioValue === 'Xml'" />
+      </el-tab-pane>
+    </el-tabs>
+
+    <div class="bottom-container">
+      <el-radio-group v-model="radioValue" size="mini">
+        <el-radio-button label="Diagram"></el-radio-button>
+        <el-radio-button label="Xml"></el-radio-button>
+      </el-radio-group>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -26,12 +43,14 @@ import propertiesPanelModule from 'bpmn-js-properties-panel'
 import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda'
 import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json'
 
-import ToolBar from './ToolBar.vue'
+import XmlPanel from './XmlPanel'
+import ToolBar from './ToolBar'
 import { xmlStr } from './xmlData.js'
+import { mapMutations } from 'vuex'
+
 export default {
-  components: { ToolBar },
+  components: { XmlPanel, ToolBar },
   props: {
-    activeName: String
   },
   data () {
     return {
@@ -39,13 +58,26 @@ export default {
       xml: '',
       elementSelector: [],
       openPanel: true,
-      scale: 1
+      scale: 1,
+      activeName: 'first',
+      radioValue: 'Diagram'
+    }
+  },
+  computed: {
+  },
+  watch: {
+    radioValue: {
+      immediate: true,
+      handler (v) {
+        this.setRadioValue(v)
+      }
     }
   },
   mounted () {
     this.init()
   },
   methods: {
+    ...mapMutations(['setRadioValue']),
     init () {
       this.bpmnModeler = new Modeler({
         container: this.$refs.canvas,
@@ -93,9 +125,16 @@ export default {
       this.createNewDiagram()
     },
 
+    updateScale (value) {
+      this.scale = value
+    },
+
     getCurDiagram () {
       return this
-    }
+    },
+
+    handleClick () { }
+
   }
 }
 </script>
@@ -156,5 +195,12 @@ export default {
       }
     }
   }
+}
+
+.bottom-container {
+  z-index: 9;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
 }
 </style>

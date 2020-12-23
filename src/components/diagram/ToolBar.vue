@@ -63,7 +63,8 @@ export default {
   props: {
     bpmnModeler: Object,
     xml: String,
-    elementSelector: Array
+    elementSelector: Array,
+    scale: Number
   },
   data () {
     return {

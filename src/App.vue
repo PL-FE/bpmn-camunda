@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <Home class="home" />
+    <Diagram class="home" />
   </div>
 </template>
 
 <script>
-import Home from './views/home'
+import Diagram from '@/components/diagram'
 
 export default {
   name: 'App',
   components: {
-    Home
+    Diagram
   }
 }
 </script>
