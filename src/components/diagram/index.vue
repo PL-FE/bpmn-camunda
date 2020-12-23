@@ -1,9 +1,12 @@
 <template>
   <div class="bpmn-container">
-    <div ref="canvas" class="canves"></div>
-    <div class="properties" :class="{open: openPanel}">
-      <div class="toggle" @click="openPanel = !openPanel">Properties Panel</div>
-      <div ref="propertiesPanel" class="panel"></div>
+    <ToolBar @updateXml="updateXml" :bpmnModeler="bpmnModeler" :scale.sync="scale" :elementSelector="elementSelector" :xml="xml" />
+    <div class="canvas-container">
+      <div ref="canvas" class="canves"></div>
+      <div class="properties" :class="{open: openPanel}">
+        <div class="toggle" @click="openPanel = !openPanel">Properties Panel</div>
+        <div ref="propertiesPanel" class="panel"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -23,11 +26,10 @@ import propertiesPanelModule from 'bpmn-js-properties-panel'
 import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda'
 import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda.json'
 
+import ToolBar from './ToolBar.vue'
 import { xmlStr } from './xmlData.js'
-
-import { mapMutations } from 'vuex'
-
 export default {
+  components: { ToolBar },
   props: {
     activeName: String
   },
@@ -44,7 +46,6 @@ export default {
     this.init()
   },
   methods: {
-    ...mapMutations(['addDiagramList']),
     init () {
       this.bpmnModeler = new Modeler({
         container: this.$refs.canvas,
@@ -63,8 +64,6 @@ export default {
           camunda: camundaModdleDescriptor
         }
       })
-
-      this.addDiagramList({ instanceName: this, activeName: this.activeName })
 
       this.createNewDiagram()
 
@@ -89,32 +88,13 @@ export default {
       })
     },
 
-    setColor (fillColor = 'blue', strokeColor = 'red') {
-      const modeling = this.bpmnModeler.get('modeling')
-      this.elementSelector.map(element => {
-        modeling.setColor(element, {
-          fill: fillColor,
-          stroke: strokeColor
-        })
-      })
+    updateXml (xml) {
+      this.xml = xml
+      this.createNewDiagram()
     },
 
-    // left/top/right/bottom/cneter/middle
-    alignElements (position = 'center') {
-      const alignElements = this.bpmnModeler.get('alignElements')
-      alignElements.trigger(this.elementSelector, position)
-    },
-
-    // horizontal/vertical
-    distributeElements (axis = 'horizontal') {
-      const alignElements = this.bpmnModeler.get('distributeElements')
-      alignElements.trigger(this.elementSelector, axis)
-    },
-
-    handlerZoom (radio) {
-      const newScale = !radio ? 1.0 : this.scale + radio
-      this.bpmnModeler.get('canvas').zoom(newScale)
-      this.scale = newScale
+    getCurDiagram () {
+      return this
     }
   }
 }
@@ -124,8 +104,13 @@ export default {
 .bpmn-container {
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   height: calc(100vh - 95px);
+  .canvas-container {
+    display: flex;
+    height: 100%;
+  }
 
   .canves {
     height: 100%;

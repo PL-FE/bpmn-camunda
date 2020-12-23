@@ -28,11 +28,11 @@
     <i title="缩小" class="app-icon el-icon-zoom-out" @click="handlerZoom(-0.1)"></i> -->
 
     <input type="file" id="files" ref="refFile" style="display: none" @change="loadBPMN" />
+
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 
 const COLORS = [{
   title: 'White',
@@ -60,24 +60,25 @@ const COLORS = [{
   stroke: 'rgb(142, 36, 170)'
 }]
 export default {
+  props: {
+    bpmnModeler: Object,
+    xml: String,
+    elementSelector: Array
+  },
   data () {
     return {
       color: '',
       isOpenColor: false,
+      activeName: 'first',
       COLORS
     }
   },
-  computed: {
-    ...mapGetters(['curDiagram'])
-  },
-  mounted () {
-  },
   methods: {
     redo () {
-      this.curDiagram.bpmnModeler.get('commandStack').redo()
+      this.bpmnModeler.get('commandStack').redo()
     },
     undo () {
-      this.curDiagram.bpmnModeler.get('commandStack').undo()
+      this.bpmnModeler.get('commandStack').undo()
     },
 
     openColor () {
@@ -85,32 +86,42 @@ export default {
     },
 
     setColor (fill, stroke) {
-      this.curDiagram.setColor(fill, stroke)
+      const modeling = this.bpmnModeler.get('modeling')
+      this.elementSelector.map(element => {
+        modeling.setColor(element, {
+          fill,
+          stroke
+        })
+      })
     },
 
-    alignElements (position) {
-      if (!this.curDiagram.elementSelector.length) return
-      this.curDiagram.alignElements(position)
+    // left/top/right/bottom/cneter/middle
+    alignElements (position = 'center') {
+      const alignElements = this.bpmnModeler.get('alignElements')
+      alignElements.trigger(this.elementSelector, position)
     },
 
+    // horizontal/vertical
     distributeElements (axis) {
-      if (!this.curDiagram.elementSelector.length) return
-      this.curDiagram.distributeElements(axis)
+      const alignElements = this.bpmnModeler.get('distributeElements')
+      alignElements.trigger(this.elementSelector, axis)
     },
 
     handlerZoom (radio) {
-      this.curDiagram.handlerZoom(radio)
+      const newScale = !radio ? 1.0 : this.scale + radio
+      this.bpmnModeler.get('canvas').zoom(newScale)
+      this.$emit('scale', newScale)
     },
 
     async saveXml () {
-      const res = await this.curDiagram.bpmnModeler.saveXML({ format: true })
-      this.curDiagram.xml = res.xml
+      const res = await this.bpmnModeler.saveXML({ format: true })
+      this.$emit('updateXml', res.xml)
       this.$message.success('保存成功')
     },
 
     async saveBPMN () {
       try {
-        const result = await this.curDiagram.bpmnModeler.saveXML({ format: true })
+        const result = await this.bpmnModeler.saveXML({ format: true })
         const { xml } = result
 
         const xmlBlob = new Blob([xml], {
@@ -139,14 +150,13 @@ export default {
       const reader = new FileReader()
       reader.readAsText(file)
       reader.onload = function () {
-        that.curDiagram.xml = this.result
-        that.curDiagram.createNewDiagram()
+        that.$emit('updateXml', this.result)
       }
     },
 
     async saveSVG () {
       try {
-        const result = await this.curDiagram.bpmnModeler.saveSVG()
+        const result = await this.bpmnModeler.saveSVG()
         const { svg } = result
 
         const svgBlob = new Blob([svg], {

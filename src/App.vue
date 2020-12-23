@@ -1,22 +1,16 @@
 <template>
   <div id="app">
-    <Header class="header" />
-    <Mid class="mid" />
-    <Bottom class="bottom" />
+    <Home class="home" />
   </div>
 </template>
 
 <script>
-import Header from './views/header'
-import Mid from './views/mid'
-import Bottom from './views/bottom'
+import Home from './views/home'
 
 export default {
   name: 'App',
   components: {
-    Header,
-    Mid,
-    Bottom
+    Home
   }
 }
 </script>
@@ -33,11 +27,7 @@ body {
   flex-direction: column;
   padding: 10px;
 
-  .header {
-    width: 100%;
-  }
-
-  .mid {
+  .home {
     flex: 1;
   }
 }

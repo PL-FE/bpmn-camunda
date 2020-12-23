@@ -1,9 +1,6 @@
 <template>
   <div class="xml-container">
-    <codemirror ref="cmEditor"
-      @changes="mirrorCodeChange"
-      :value="xml"
-      :options="cmOptions" />
+    <codemirror ref="cmEditor" @changes="mirrorCodeChange" :value="xml" :options="cmOptions" />
   </div>
 </template>
 
@@ -21,8 +18,8 @@ import 'codemirror/addon/search/searchcursor'
 import 'codemirror/addon/dialog/dialog'
 import 'codemirror/addon/dialog/dialog.css'
 
-import { mapGetters } from 'vuex'
 export default {
+  props: { curDiagram: Object },
   components: {
     codemirror
   },
@@ -44,7 +41,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['curDiagram'])
   },
   mounted () {
     this.saveXML()
