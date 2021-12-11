@@ -23,9 +23,11 @@
     <i title="元素底部对齐" class="app-icon app-icon-distribute-vertical-tool" @click="alignElements('bottom')"></i>|
     <i title="水平分布元素" class="app-icon app-icon-distribute-horizontal-tool" @click="distributeElements('horizontal')"></i>
     <i title="垂直分布元素" class="app-icon app-icon-distribute-vertical-tool" @click="distributeElements('vertical')"></i>
-
-    <!-- <i title="放大" class="app-icon el-icon-zoom-in" @click="handlerZoom(0.1)"></i>
-    <i title="缩小" class="app-icon el-icon-zoom-out" @click="handlerZoom(-0.1)"></i> -->
+    |
+    <i title="放大" class="el-icon-zoom-in" @click="handlerZoom(0.1)"></i>
+    <i title="缩小" class="el-icon-zoom-out" @click="handlerZoom(-0.1)"></i>
+    <i title="复制" class="el-icon-document-copy" @click="execCopy"></i>
+    <i title="粘贴" class="el-icon-document-add" @click="execPaste"></i>
 
     <input type="file" id="files" ref="refFile" style="display: none" @change="loadBPMN" />
 
@@ -75,6 +77,16 @@ export default {
     }
   },
   methods: {
+    execCopy () {
+      if (!this.elementSelector.length) return this.$message.warning('请选择元素')
+
+      const modeler = this.bpmnModeler
+      this.copy(modeler, this.elementSelector)
+    },
+    execPaste () {
+      const modeler = this.bpmnModeler
+      this.paste(modeler, 'Process_1', { x: 0, y: 0 })
+    },
     redo () {
       this.bpmnModeler.get('commandStack').redo()
     },
@@ -180,6 +192,111 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+
+    /**
+     * For the given modeler, copy an element to
+     * localStorage.
+     *
+     * @param  {BpmnModeler} modeler
+     * @param  {Array} elements
+     * @param  {String} target
+     * @param  {Point} position
+     */
+    copy (modeler, elements) {
+      var clipboard = modeler.get('clipboard')
+      var copyPaste = modeler.get('copyPaste')
+
+      // get element to be copied
+
+      // copy!
+      copyPaste.copy(elements)
+
+      // retrieve clipboard contents
+      var copied = clipboard.get()
+
+      // persist in local storage, encoded as json
+      localStorage.setItem('bpmnClipboard', JSON.stringify(copied))
+    },
+
+    /**
+    * For the given modeler retrieved copied elements from
+    * localStorage and paste them onto the specified target.
+    *
+    * @param  {BpmnModeler} modeler
+    * @param  {String} target
+    * @param  {Point} position
+    */
+    paste (modeler, targetId, position) {
+      var clipboard = modeler.get('clipboard')
+      var copyPaste = modeler.get('copyPaste')
+      var elementRegistry = modeler.get('elementRegistry')
+      var moddle = modeler.get('moddle')
+
+      // retrieve from local storage
+      var serializedCopy = localStorage.getItem('bpmnClipboard')
+
+      // parse tree, reinstantiating contained objects
+      var parsedCopy = JSON.parse(serializedCopy, this.createReviver(moddle))
+
+      // put into clipboard
+      clipboard.set(parsedCopy)
+
+      var pasteContext = {
+        element: elementRegistry.get(targetId),
+        point: position
+      }
+
+      // paste tree
+      copyPaste.paste(pasteContext)
+    },
+
+    /**
+    * A factory function that returns a reviver to be
+    * used with JSON#parse to reinstantiate moddle instances.
+    *
+    * @param  {Moddle} moddle
+    *
+    * @return {Function}
+    */
+    createReviver (moddle) {
+      var elCache = {}
+      /**
+       * The actual reviewer that creates model instances
+       * for elements with a $type attribute.
+       *
+       * Elements with ids will be re-used, if already
+       * created.
+       *
+       * @param  {String} key
+       * @param  {Object} object
+       *
+       * @return {Object} actual element
+       */
+      return function (key, object) {
+        if (typeof object === 'object' && typeof object.$type === 'string') {
+          var objectId = object.id
+
+          if (objectId && elCache[objectId]) {
+            return elCache[objectId]
+          }
+
+          var type = object.$type
+          var attrs = Object.assign({}, object)
+
+          delete attrs.$type
+
+          var newEl = moddle.create(type, attrs)
+
+          if (objectId) {
+            elCache[objectId] = newEl
+          }
+
+          return newEl
+        }
+
+        return object
+      }
     }
   }
 }
@@ -224,5 +341,15 @@ export default {
     list-style: none;
     transform: translateX(-50%);
   }
+}
+i[class^='el-icon'] {
+  padding: 5px;
+
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0);
+}
+i[class^='el-icon']:hover {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
 }
 </style>
