@@ -78,7 +78,7 @@ export default {
   },
   methods: {
     execCopy () {
-      if (!this.elementSelector.length) return this.$message.warning('请选择元素')
+      if (!this.elementSelector.length) return this.$message.warning('请选择元素！')
 
       const modeler = this.bpmnModeler
       this.copy(modeler, this.elementSelector)
