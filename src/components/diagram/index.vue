@@ -100,8 +100,8 @@ export default {
       immediate: true,
       handler (v, o) {
         this.setRadioValue(v)
-        if (v !== 'Xml' && o) {
-          this.createNewDiagram()
+        if (this.isShowXml) {
+          this.saveXML()
         }
       }
     }
@@ -176,6 +176,7 @@ export default {
 
     mirrorCodeChange (instance, changeObj) {
       this.xml = instance.getValue()
+      this.createNewDiagram()
     }
 
   }
