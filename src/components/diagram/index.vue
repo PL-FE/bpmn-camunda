@@ -63,6 +63,8 @@ import ToolBar from '@/components/diagram/ToolBar.vue'
 import { xmlStr } from './xmlData.js'
 import { mapMutations } from 'vuex'
 
+// 导入汉化包
+import customTranslate from '@/components/diagram/customTranslate/customTranslate'
 export default {
   components: { ToolBar, codemirror },
   props: {
@@ -112,6 +114,10 @@ export default {
   methods: {
     ...mapMutations(['setRadioValue']),
     init () {
+      // 添加翻译组件
+      var customTranslateModule = {
+        translate: ['value', customTranslate]
+      }
       this.bpmnModeler = new Modeler({
         container: this.$refs.canvas,
         keyboard: {
@@ -123,7 +129,8 @@ export default {
         additionalModules: [
           minimapModule,
           propertiesPanelModule,
-          propertiesProviderModule
+          propertiesProviderModule,
+          customTranslateModule
         ],
         moddleExtensions: {
           camunda: camundaModdleDescriptor
