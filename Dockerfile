@@ -1,9 +1,10 @@
 FROM node:14
 COPY ./ /app
 WORKDIR /app
-RUN yarn install && yarn build
+RUN npm install && npm build
 
+# 设置基础镜像
 FROM nginx
-RUN mkdir /app
-COPY --from=0 /app/dist /app
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY dist/ /usr/share/nginx/html/
+COPY default.conf /etc/nginx/conf.d/default.conf
+
