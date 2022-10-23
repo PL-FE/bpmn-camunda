@@ -27,5 +27,8 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
+            docker stop bpmn-camunda
+            docker rm bpmn-camunda
+            docker rmi ${{ secrets.DOCKER_REPOSITORY }}:latest
             docker pull ${{ secrets.DOCKER_REPOSITORY }}:latest
             docker run -d -p 10001:80 --name bpmn-camunda ${{ secrets.DOCKER_REPOSITORY }}:latest
