@@ -1,7 +1,7 @@
 FROM node:14
 COPY ./ /app
 WORKDIR /app
-RUN npm install && npm build
+RUN yarn install && yarn build
 
 # 设置基础镜像
 FROM nginx
