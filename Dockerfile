@@ -1,10 +1,10 @@
 FROM node:14
-COPY ./ /app
-WORKDIR /app
 RUN yarn install && yarn build
 
-# 设置基础镜像
 FROM nginx
-COPY dist/ /usr/share/nginx/html/
-COPY default.conf /etc/nginx/conf.d/default.conf
 
+EXPOSE 80
+
+RUN rm /etc/nginx/conf.d/default.conf
+ADD default.conf /etc/nginx/conf.d/
+COPY dist/ /usr/share/nginx/html/
