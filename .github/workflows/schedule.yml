@@ -1,21 +1,31 @@
-name: Update bpmn-camunda
-on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: '0 0 * * *'
-
+name: CI/CD
+# 触发条件为 push
+on: [push] # 执行时机
+# 任务
 jobs:
-  build:
-    runs-on: windows-latest
+  test:
+    # 运行的环境
+    runs-on: ubuntu-latest
+    # 步骤
     steps:
-      - uses: actions/checkout@v2
-      - name: npm install 安装依赖
-        run: npm install
-      - name: npm run all 生成发布
-        run: npm run all
-        env:
-          HOST: ${{ secrets.HOST }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          REMOTEDIR: ${{ secrets.REMOTEDIR }}
+      - uses: actions/checkout@v2 # git pull
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: 打包镜像, 上传 Docker Hub
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t actions:latest  .
+          docker tag actions:latest ${{ secrets.DOCKER_REPOSITORY }}
+          docker push ${{ secrets.DOCKER_REPOSITORY }}:latest
+
+      - name: 登录服务器, 执行脚本
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            docker pull penglianger/actions-image:latest
+            docker run -d -p 5555:80 --name actions penglianger/actions-image:latest
