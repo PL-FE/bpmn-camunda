@@ -27,5 +27,5 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            docker pull penglianger/actions-image:latest
-            docker run -d -p 5555:80 --name actions penglianger/actions-image:latest
+            docker pull ${{ secrets.DOCKER_REPOSITORY }}:latest
+            docker run -d -p 5555:80 --name actions ${{ secrets.DOCKER_REPOSITORY }}:latest
