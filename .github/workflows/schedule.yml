@@ -1,6 +1,6 @@
 name: CI/CD
 # 触发条件为 push
-on: [push] # 执行时机
+on: [push] # 执行时机的
 # 任务
 jobs:
   test:
@@ -12,23 +12,24 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 20
       - name: 打包镜像, 上传 Docker Hub
         run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
           docker build -t bpmn-camunda-image  .
-          docker tag bpmn-camunda-image ${{ secrets.DOCKER_REPOSITORY }}
-          docker push ${{ secrets.DOCKER_REPOSITORY }}:latest
+          docker tag bpmn-camunda-image registry.cn-hangzhou.aliyuncs.com/pengliang/bpmn-camunda:latest
+          docker push registry.cn-hangzhou.aliyuncs.com/pengliang/bpmn-camunda:latest
 
       - name: 登录服务器, 执行脚本
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
           script: |
-            docker stop bpmn-camunda
-            docker rm bpmn-camunda
-            docker rmi ${{ secrets.DOCKER_REPOSITORY }}:latest
-            docker pull ${{ secrets.DOCKER_REPOSITORY }}:latest
-            docker run --restart=always -d -p 10001:80 --name bpmn-camunda ${{ secrets.DOCKER_REPOSITORY }}:latest
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
+            docker stop bpmn-camunda || true
+            docker rm bpmn-camunda || true
+            docker rmi registry.cn-hangzhou.aliyuncs.com/pengliang/bpmn-camunda:latest || true
+            docker pull registry.cn-hangzhou.aliyuncs.com/pengliang/bpmn-camunda:latest
+            docker run -d -p 10003:80 --name bpmn-camunda registry.cn-hangzhou.aliyuncs.com/pengliang/bpmn-camunda:latest
